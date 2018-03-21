@@ -52,8 +52,8 @@ def create_text_file_with_filenames():
     
     # now that we have two lists - save them on disk, so that they can be used
     # by the tfrecord builder later
-    
     train_fileName = os.path.join(inArgs.data_dir, 'train.txt')
+    #print(train_fileName)
     with open(train_fileName, 'w') as f:
         for item in trainFilenames:
             f.write("%s\n" % item)    
@@ -78,7 +78,9 @@ def get_image_lists(image_dir):
     for directory in directories:
         file_list = []
         image_list[directory] = list()
+        count = 0
         file_glob = os.path.join(image_dir, "images", directory, '*.' + 'jpg')
+        #print(file_glob)
         file_list.extend(glob.glob(file_glob))
 
         if not file_list:
@@ -87,13 +89,15 @@ def get_image_lists(image_dir):
             for f in file_list:
                 filename = os.path.splitext(f.split(os.path.sep)[-1])[0]
                 annotation_file = os.path.join(image_dir, "annotations", directory, filename + '.png')
+				
                 if os.path.exists(annotation_file):
                     record = f + " " + annotation_file 
-                    print("Appending %s file with: \n %s" % (directory, record))
+                    print("Appending %d/%d \n %s file with: \n %s" % (count, len(file_list), directory, record))
                     #{'image': f, 'annotation': annotation_file, 'filename': filename}
                     image_list[directory].append(record)
                 else:
                     print("Annotation file not found for %s - Skipping" % filename)
+                count +=1
 
         #random.shuffle(image_list[directory])
         no_of_images = len(image_list[directory])

@@ -96,15 +96,15 @@ def augment(image, label):
 # normalize function 
 # maps the images to normalized - not used
 def normalize(image, label):
-#  image = tf.cast(image, tf.float32) * (1. / 255) - 0.5
+  image = tf.cast(image, tf.float32) #* (1. / 255) - 0.5
   return image, label
 
 # input function 
 # function for creating a placeholder with tfrecords data files
-def inputs(train, batch_size, num_epochs=None):
+def inputs(mode, batch_size, num_epochs=None):
   """Reads input data num_epochs times.
   Args:
-    train: Selects between the training (True) and validation (False) data.
+    mode: Selects between the training ('train') and validation ('val') data.
     batch_size: Number of examples per returned batch.
     num_epochs: Number of times to read the input data, or 0/None to
        train forever.
@@ -125,14 +125,14 @@ def inputs(train, batch_size, num_epochs=None):
   # based on the input to train (True, False) select (train, val) tfrecords    
   inTxtFiles = ['train', 'val']
   inTxtFile = []
-  if(train): # if training set selected
+  if(mode=='train'): # if training set selected
       inTxtFile = inTxtFiles[0]
   else:
       inTxtFile = inTxtFiles[1]
     # create path to tfrecords file
   filename = os.path.join(inArgs.data_dir + '{}.tfrecords'.format(inTxtFile))
 
-  # open data pipline inside input scope
+  # open data pipeline inside input scope
   with tf.name_scope('input'):
       
     # TFRecordDataset opens a binary file and reads one record at a time.
@@ -157,13 +157,13 @@ def inputs(train, batch_size, num_epochs=None):
     # read data in provided batch_size
     dataset = dataset.batch(batch_size)
 
-    # return an iterator to the main script - can be used to extract data
-    # from tfrecords with the above defined data pipline
+    # return an iterator output (image, labels) to the main script - can be used to extract data
+    # from tfrecords with the above defined data pipeline
     iterator = dataset.make_one_shot_iterator()
     
   return iterator.get_next()
 
-# main function to debug the code independent of other components in the pipline
+# main function to debug the code independent of other components in the pipeline
 if __name__ == '__main__':
     
     # get the input arguments

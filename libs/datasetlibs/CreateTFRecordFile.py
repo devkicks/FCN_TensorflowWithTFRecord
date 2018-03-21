@@ -54,14 +54,15 @@ def create_tfrecord_files():
     for inTxtFile in inTxtFiles:
         
         # create the path to store TFRecord files
-        tfrecords_filename = os.path.join(inArgs.data_dir + '{}.tfrecords'.format(inTxtFile))
-        
+        tfrecords_filename = os.path.join(inArgs.data_dir, '{}.tfrecords'.format(inTxtFile))
+        print(tfrecords_filename)
         # initialize a TFRecordWriter for writing to file        
         writer = tf.python_io.TFRecordWriter(tfrecords_filename)
         
         # open the corresponding text file (train/val)
         with open(os.path.join(inArgs.data_dir, '{}.txt'.format(inTxtFile)), 'r') as f:
             # read each line
+            count = 0
             for line in f:
                 line = line.strip()
                 # split the paths for input and target images - split on " " space
@@ -70,8 +71,9 @@ def create_tfrecord_files():
                 # read the images using PIL
                 img = np.array(Image.open(img_path))
                 annotation = np.array(Image.open(annotation_path))
-                print("Appending %s file with data: \n %s" % (inTxtFile, line))
-                
+
+                print("TFRecords %d \n %s file with data: \n %s" % (count, inTxtFile, line))
+                count +=1
                 
                 # reading size of each image
                 height = img.shape[0]
