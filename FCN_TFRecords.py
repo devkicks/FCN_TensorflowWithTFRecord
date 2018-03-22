@@ -186,16 +186,17 @@ def main(argv=None):
 
     print("Setting up Saver...")
     saver = tf.train.Saver()
-    summary_writer = tf.summary.FileWriter(inArgs.logs_dir, sess.graph)
+    summary_writer = tf.summary.FileWriter(inArgs.log_dir, sess.graph)
 
     sess.run(tf.global_variables_initializer())
-    ckpt = tf.train.get_checkpoint_state(inArgs.logs_dir)
+    ckpt = tf.train.get_checkpoint_state(inArgs.log_dir)
     if ckpt and ckpt.model_checkpoint_path:
         saver.restore(sess, ckpt.model_checkpoint_path)
         print("Model restored...")
 
     if inArgs.mode == "train":
         for itr in xrange(MAX_ITERATION):
+            print(itr)
             # no need for this as we are now using TFRecords
             #train_images, train_annotations = train_dataset_reader.next_batch(inArgs.batch_size)
             
@@ -214,7 +215,7 @@ def main(argv=None):
                 feed_dict = {keep_probability: 1.0}
                 valid_loss = sess.run(loss, feed_dict=feed_dict)
                 print("%s ---> Validation_loss: %g" % (datetime.datetime.now(), valid_loss))
-                saver.save(sess, inArgs.logs_dir + "model.ckpt", itr)
+                saver.save(sess, os.path.join(inArgs.log_dir, "model.ckpt"), itr)
 
 #    elif inArgs.mode == "val":
 #        
@@ -226,9 +227,9 @@ def main(argv=None):
         pred = np.squeeze(pred, axis=3)
 
         for itr in range(inArgs.batch_size):
-            utils.save_image(valid_images[itr].astype(np.uint8), inArgs.logs_dir, name="inp_" + str(5+itr))
-            utils.save_image(valid_annotations[itr].astype(np.uint8), inArgs.logs_dir, name="gt_" + str(5+itr))
-            utils.save_image(pred[itr].astype(np.uint8), inArgs.logs_dir, name="pred_" + str(5+itr))
+            utils.save_image(valid_images[itr].astype(np.uint8), inArgs.log_dir, name="inp_" + str(5+itr))
+            utils.save_image(valid_annotations[itr].astype(np.uint8), inArgs.log_dir, name="gt_" + str(5+itr))
+            utils.save_image(pred[itr].astype(np.uint8), inArgs.log_dir, name="pred_" + str(5+itr))
             print("Saved image: %d" % itr)
 
 

@@ -97,6 +97,7 @@ def augment(image, label):
 # maps the images to normalized - not used
 def normalize(image, label):
   image = tf.cast(image, tf.float32) #* (1. / 255) - 0.5
+  label = tf.cast(label, tf.int32)
   return image, label
 
 # input function 
@@ -130,7 +131,7 @@ def inputs(mode, batch_size, num_epochs=None):
   else:
       inTxtFile = inTxtFiles[1]
     # create path to tfrecords file
-  filename = os.path.join(inArgs.data_dir + '{}.tfrecords'.format(inTxtFile))
+  filename = os.path.join(inArgs.data_dir, '{}.tfrecords'.format(inTxtFile))
 
   # open data pipeline inside input scope
   with tf.name_scope('input'):
