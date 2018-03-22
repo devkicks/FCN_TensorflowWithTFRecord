@@ -12,8 +12,12 @@ from six.moves import xrange
 
 # my custom lib loads
 from libs.ArgsParser import *
-from libs.datasetlibs.ReadTFRecord import *
+from libs.datasetlibs.ReadTFRecordEncoded import *
 
+# clear the previously saved graphs (if any)
+tf.reset_default_graph()
+
+# parse commandline arguments
 inArgs = parseArguments()
 
 MODEL_URL = 'http://www.vlfeat.org/matconvnet/models/beta16/imagenet-vgg-verydeep-19.mat'
@@ -126,7 +130,7 @@ def inference(image, keep_prob):
         b_t3 = utils.bias_variable([NUM_OF_CLASSESS], name="b_t3")
         conv_t3 = utils.conv2d_transpose_strided(fuse_2, W_t3, b_t3, output_shape=deconv_shape3, stride=8)
 
-        annotation_pred = tf.argmax(conv_t3, dimension=3, name="prediction")
+        annotation_pred = tf.argmax(conv_t3, axis=3, name="prediction")
 
     return tf.expand_dims(annotation_pred, dim=3), conv_t3
 
@@ -146,8 +150,8 @@ def main(argv=None):
     keep_probability = tf.placeholder(tf.float32, name="keep_probabilty")
     
     # Replacing the following lines to use TFRecords
-    image = tf.placeholder(tf.float32, shape=[None, IMAGE_SIZE, IMAGE_SIZE, 3], name="input_image")
-    annotation = tf.placeholder(tf.int32, shape=[None, IMAGE_SIZE, IMAGE_SIZE, 1], name="annotation")
+#    image = tf.placeholder(tf.float32, shape=[None, IMAGE_SIZE, IMAGE_SIZE, 3], name="input_image")
+#    annotation = tf.placeholder(tf.int32, shape=[None, IMAGE_SIZE, IMAGE_SIZE, 1], name="annotation")
     
     # Accesing TFRecords function
     image, annotation = inputs(inArgs.mode, inArgs.batch_size)
@@ -181,8 +185,9 @@ def main(argv=None):
     #    if inArgs.mode == 'train':
     #        train_dataset_reader = dataset.BatchDatset(train_records, image_options)
     #    validation_dataset_reader = dataset.BatchDatset(valid_records, image_options)
-
-    sess = tf.Session()
+    config = tf.ConfigProto()
+    config.gpu_options.allow_growth = True
+    sess = tf.Session(config=config)
 
     print("Setting up Saver...")
     saver = tf.train.Saver()

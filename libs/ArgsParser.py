@@ -5,6 +5,7 @@ import os
 def parseArguments():
     #DATA_DIRECTORY = "Data_zoo"
     DATA_DIRECTORY = os.path.join("Data_zoo", "MIT_SceneParsing", "ADEChallengeDataSmall")
+#    DATA_DIRECTORY = os.path.join("Data_zoo", "MIT_SceneParsing", "ADEChallengeData2016")
     INPUT_SIZE = 224
     BATCH_SIZE = 2
     MODEL_DIR = "Model_zoo"
