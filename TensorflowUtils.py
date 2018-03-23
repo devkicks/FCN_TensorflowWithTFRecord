@@ -9,7 +9,6 @@ import tarfile
 import zipfile
 import scipy.io
 
-
 def get_model_data(dir_path, model_url):
     maybe_download_and_extract(dir_path, model_url)
     filename = model_url.split("/")[-1]
@@ -17,9 +16,7 @@ def get_model_data(dir_path, model_url):
     if not os.path.exists(filepath):
         raise IOError("VGG Model not found!")
     data = scipy.io.loadmat(filepath)
-    return data    
-    
-
+    return data
 
 def maybe_download_and_extract(dir_path, url_name, is_tarfile=False, is_zipfile=False):
     if not os.path.exists(dir_path):
@@ -43,7 +40,28 @@ def maybe_download_and_extract(dir_path, url_name, is_tarfile=False, is_zipfile=
                 zip_dir = zf.namelist()[0]
                 zf.extractall(dir_path)
 
-
+# function renames train / val folders if they are names training or validation
+# works for MIT dataset
+def maybe_rename_folders(data_dir, url_name):    
+    if not os.path.exists(data_dir):
+        print('Error: data_dir incorrect/ does not exist')
+        return
+    else:
+        filename = url_name.split('/')[-1]
+        foldername = filename.split('.')[0]
+        folderpath = os.path.join(data_dir, foldername)
+        
+        imagefolder = os.path.join(folderpath, 'images')
+        annotationfolder = os.path.join(folderpath, 'annotations')
+        folders = [imagefolder, annotationfolder]
+        # renaming folders if required
+        for i in folders:
+            folder_list = []
+            folder_list.extend(glob.glob(i))
+            
+            for j in folder_list:
+                print(j)
+                
 def save_image(image, save_dir, name, mean=None):
     """
     Save image by unprocessing if mean given else just save
