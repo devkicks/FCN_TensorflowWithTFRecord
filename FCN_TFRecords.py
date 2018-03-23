@@ -154,7 +154,7 @@ def main(argv=None):
        
     # Accesing TFRecords function from training/ validation data
     # train_or_val_data determines where the data comes from 
-    # == True | training     --      === False | false
+    # == True | training     --      === False | validation
     image, annotation = inputs(train_or_val_data, inArgs.batch_size)
         
     pred_annotation, logits = inference(image, keep_probability)
@@ -213,9 +213,9 @@ def main(argv=None):
                 saver.save(sess, os.path.join(inArgs.log_dir, "model.ckpt"), itr)
     elif inArgs.mode == "val":
         feed_dict = {keep_probability: 1.0, train_or_val_data: False}
-        pred = sess.run(pred_annotation, feed_dict = feed_dict)
-        valid_annotations = np.squeeze(annotation, axis=3)
-        valid_images = image
+        [pred, img, an] = sess.run([pred_annotation, image, annotation], feed_dict = feed_dict)
+        valid_annotations = np.squeeze(an, axis=3)
+        valid_images = img
         pred = np.squeeze(pred, axis=3)
 
         for itr in range(inArgs.batch_size):
