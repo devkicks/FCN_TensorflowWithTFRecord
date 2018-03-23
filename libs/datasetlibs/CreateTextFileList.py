@@ -26,12 +26,12 @@ Muhammad Asad
 #
 """ 
      ├── --data-dir
-     |   ├── train
-     |   |   ├── images
-     |   |   ├── annotations
-     |   ├── val
-     |   |   ├── images
-     |   |   ├── annotations
+     |   ├── images 
+     |   |   ├── train
+     |   |   ├── val
+     |   ├── annotations
+     |   |   ├── train
+     |   |   ├── val
 """
 # --data-dir can be specified as input argument to the dataset creation file
 
