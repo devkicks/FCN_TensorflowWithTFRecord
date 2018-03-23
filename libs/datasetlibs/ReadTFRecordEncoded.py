@@ -113,7 +113,7 @@ def normalize(image, label):
 def inputs(mode, batch_size, num_epochs=None):
   """Reads input data num_epochs times.
   Args:
-    mode: Selects between the training ('train') and validation ('val') data.
+    mode: Selects between the training (True) and validation (False) data.
     batch_size: Number of examples per returned batch.
     num_epochs: Number of times to read the input data, or 0/None to
        train forever.
@@ -134,7 +134,7 @@ def inputs(mode, batch_size, num_epochs=None):
   # based on the input to train (True, False) select (train, val) tfrecords    
   inTxtFiles = ['train', 'val']
   inTxtFile = []
-  if(mode=='train'): # if training set selected
+  if mode is not None: # if training set selected
       inTxtFile = inTxtFiles[0]
   else:
       inTxtFile = inTxtFiles[1]

@@ -1,7 +1,7 @@
 from __future__ import print_function
 import tensorflow as tf
 import numpy as np
-
+import os
 import TensorflowUtils as utils
 import read_MITSceneParsingData as scene_parsing
 import datetime
@@ -147,15 +147,16 @@ def train(loss_val, var_list):
 
 
 def main(argv=None):
+    
+    # placeholder for selecting tfrecord for data on the fly
+    train_or_val_data = tf.placeholder(tf.bool, name='train_or_val_data')
     keep_probability = tf.placeholder(tf.float32, name="keep_probabilty")
-    
-    # Replacing the following lines to use TFRecords
-#    image = tf.placeholder(tf.float32, shape=[None, IMAGE_SIZE, IMAGE_SIZE, 3], name="input_image")
-#    annotation = tf.placeholder(tf.int32, shape=[None, IMAGE_SIZE, IMAGE_SIZE, 1], name="annotation")
-    
-    # Accesing TFRecords function
-    image, annotation = inputs(inArgs.mode, inArgs.batch_size)
-    
+       
+    # Accesing TFRecords function from training/ validation data
+    # train_or_val_data determines where the data comes from 
+    # == True | training     --      === False | false
+    image, annotation = inputs(train_or_val_data, inArgs.batch_size)
+        
     pred_annotation, logits = inference(image, keep_probability)
     tf.summary.image("input_image", image, max_outputs=2)
     tf.summary.image("ground_truth", tf.cast(annotation, tf.uint8), max_outputs=2)
@@ -174,17 +175,7 @@ def main(argv=None):
     print("Setting up summary op...")
     summary_op = tf.summary.merge_all()
 
-    # no need to set up this as we are now using TFRecord dataset
-    #    print("Setting up image reader...")
-    #    train_records, valid_records = scene_parsing.read_dataset(inArgs.data_dir)
-    #    print(len(train_records))
-    #    print(len(valid_records))
-    
-    #    print("Setting up dataset reader")
-    #    image_options = {'resize': True, 'resize_size': IMAGE_SIZE}
-    #    if inArgs.mode == 'train':
-    #        train_dataset_reader = dataset.BatchDatset(train_records, image_options)
-    #    validation_dataset_reader = dataset.BatchDatset(valid_records, image_options)
+    # only use memory in gpu when required
     config = tf.ConfigProto()
     config.gpu_options.allow_growth = True
     sess = tf.Session(config=config)
@@ -194,6 +185,7 @@ def main(argv=None):
     summary_writer = tf.summary.FileWriter(inArgs.log_dir, sess.graph)
 
     sess.run(tf.global_variables_initializer())
+    
     ckpt = tf.train.get_checkpoint_state(inArgs.log_dir)
     if ckpt and ckpt.model_checkpoint_path:
         saver.restore(sess, ckpt.model_checkpoint_path)
@@ -206,29 +198,24 @@ def main(argv=None):
             #train_images, train_annotations = train_dataset_reader.next_batch(inArgs.batch_size)
             
             # we still need the keep probability in feed_dict
-            feed_dict = {keep_probability: 0.85}
+            feed_dict = {keep_probability: 0.85, train_or_val_data: True}
             sess.run(train_op, feed_dict=feed_dict)
-
+            
             if itr % 10 == 0:
-                feed_dict = {keep_probability: 0.85}
+                feed_dict = {keep_probability: 0.85, train_or_val_data: True}
                 train_loss, summary_str = sess.run([loss, summary_op], feed_dict=feed_dict)
                 print("Step: %d, Train_loss:%g" % (itr, train_loss))
                 summary_writer.add_summary(summary_str, itr)
-
             if itr % 500 == 0:
-#                valid_images, valid_annotations = validation_dataset_reader.next_batch(inArgs.batch_size)
-                feed_dict = {keep_probability: 1.0}
+                feed_dict = {keep_probability: 1.0, train_or_val_data: False}
                 valid_loss = sess.run(loss, feed_dict=feed_dict)
                 print("%s ---> Validation_loss: %g" % (datetime.datetime.now(), valid_loss))
                 saver.save(sess, os.path.join(inArgs.log_dir, "model.ckpt"), itr)
-
-#    elif inArgs.mode == "val":
-#        
-    elif inArgs.mode == "visualize":
-        valid_images, valid_annotations = validation_dataset_reader.get_random_batch(inArgs.batch_size)
-        pred = sess.run(pred_annotation, feed_dict={image: valid_images, annotation: valid_annotations,
-                                                    keep_probability: 1.0})
-        valid_annotations = np.squeeze(valid_annotations, axis=3)
+    elif inArgs.mode == "val":
+        feed_dict = {keep_probability: 1.0, train_or_val_data: False}
+        pred = sess.run(pred_annotation, feed_dict = feed_dict)
+        valid_annotations = np.squeeze(annotation, axis=3)
+        valid_images = image
         pred = np.squeeze(pred, axis=3)
 
         for itr in range(inArgs.batch_size):
