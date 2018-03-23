@@ -17,7 +17,8 @@ def get_model_data(dir_path, model_url):
     if not os.path.exists(filepath):
         raise IOError("VGG Model not found!")
     data = scipy.io.loadmat(filepath)
-    return data
+    return data    
+    
 
 
 def maybe_download_and_extract(dir_path, url_name, is_tarfile=False, is_zipfile=False):

@@ -15,7 +15,7 @@ def parseArguments():
     MODE = "train"
     DEBUG = False
     DATA_URL = 'http://data.csail.mit.edu/places/ADEchallenge/ADEChallengeData2016.zip'    
-    
+    MODEL_URL = 'http://www.vlfeat.org/matconvnet/models/beta16/imagenet-vgg-verydeep-19.mat'
     
     parser = argparse.ArgumentParser(description="FCN")
     parser.add_argument("--data-dir", type=str, default=DATA_DIRECTORY,
@@ -39,6 +39,8 @@ def parseArguments():
                     help="Debug True or False")		
     parser.add_argument("--data-url", type=str, default=DATA_URL,
                     help="URL to the dataset used")			
+    parser.add_argument("--model-url", type=str, default=DATA_URL,
+                    help="URL to the model used")			
     
     args = parser.parse_args()
     
