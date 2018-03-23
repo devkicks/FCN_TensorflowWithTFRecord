@@ -31,7 +31,8 @@ Muhammad Asad
 # --data-dir (args.data_dir) can be specified as input argument to the dataset creation file
 # --input-size (args.input_size) specifies size of input images (both width and height, assuming square)
 # --batch-size (args.batch_size) specifies size of batch for training
-
+import matplotlib
+matplotlib.use('agg')
 import matplotlib.pyplot as plt
 import tensorflow as tf
 import os

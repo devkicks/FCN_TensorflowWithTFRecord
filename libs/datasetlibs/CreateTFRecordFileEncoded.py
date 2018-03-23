@@ -27,6 +27,8 @@ from PIL import Image
 import numpy as np
 import tensorflow as tf
 import os
+import matplotlib
+matplotlib.use('agg')
 import matplotlib.pyplot as plt
 
 from libs.ArgsParser import *
