@@ -10,10 +10,13 @@ Muhammad Asad
 from libs.ArgsParser import *
 from libs.datasetlibs.CreateTextFileList import *
 from libs.datasetlibs.CreateTFRecordFileEncoded import *
+from libs.datasetlibs.MITDownloadHelper import *
+
 
 
 # main function to debug the code independent of other components in the pipeline
 if __name__ == '__main__':
+    
     create_text_file_with_filenames()
     print('\nFinished converting the dataset to text files!')
     # create TFRecords files

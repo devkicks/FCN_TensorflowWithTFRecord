@@ -37,6 +37,10 @@ Muhammad Asad
 
 import os
 import glob
+import sys
+
+# adding dir for command line execution
+sys.path.insert(0, os.path.join('..','..'))
 
 from libs.ArgsParser import *
    

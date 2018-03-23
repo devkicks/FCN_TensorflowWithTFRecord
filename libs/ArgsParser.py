@@ -4,8 +4,9 @@ import os
 # spyder
 def parseArguments():
     #DATA_DIRECTORY = "Data_zoo"
-    DATA_DIRECTORY = os.path.join("Data_zoo", "MIT_SceneParsing", "ADEChallengeDataSmall")
+#    DATA_DIRECTORY = os.path.join("Data_zoo", "MIT_SceneParsing", "ADEChallengeDataSmall")
 #    DATA_DIRECTORY = os.path.join("Data_zoo", "MIT_SceneParsing", "ADEChallengeData2016")
+    DATA_DIRECTORY = os.path.join("Data_zoo", "MIT_SceneParsing", "ADEChallengeData2016")
     INPUT_SIZE = 224
     BATCH_SIZE = 2
     MODEL_DIR = "Model_zoo"
@@ -13,7 +14,8 @@ def parseArguments():
     LEARNING_RATE = 1e-4
     MODE = "train"
     DEBUG = False
-    #SPLIT_NAME = "train"
+    DATA_URL = 'http://data.csail.mit.edu/places/ADEchallenge/ADEChallengeData2016.zip'    
+    
     
     parser = argparse.ArgumentParser(description="FCN")
     parser.add_argument("--data-dir", type=str, default=DATA_DIRECTORY,
@@ -34,7 +36,9 @@ def parseArguments():
     parser.add_argument("--mode", type=str, default=MODE,
                     help="train or val mode.")
     parser.add_argument("--debug", type=bool, default=DEBUG,
-                    help="Debug True or False")			
+                    help="Debug True or False")		
+    parser.add_argument("--data-url", type=str, default=DATA_URL,
+                    help="URL to the dataset used")			
     
     args = parser.parse_args()
     
